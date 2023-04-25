@@ -6,25 +6,24 @@ class PageLogin extends StatelessWidget{
 
   @override
   Widget build(BuildContext context){
-    return Padding(
-        padding: EdgeInsets.all(15),
-        child: Center(
-            child: ListView(
-              padding: EdgeInsets.all(0.0),
-              shrinkWrap: true,
-              children: [
-                Container(
-                  height: 150,
-                  margin: EdgeInsets.all(10),
-                  child: Center(child: Image(image: AssetImage('lib/assets/VTREffectsLogo.png'),)),
-                ),
-                SizedBox(
-                    height: 450,
-                    child: Center(child: LoginForm())
-                )
-              ],
-            )
-        )
+    return Scaffold(
+      body: Center(
+          child: ListView(
+            padding: const EdgeInsets.all(0),
+            shrinkWrap: true,
+            children: [
+              Container(
+                height: 150,
+                margin: const EdgeInsets.all(10),
+                child: const Center(child: Image(image: AssetImage('lib/assets/VTREffectsLogo.png'),)),
+              ),
+              const SizedBox(
+                height: 450,
+                  child: Center(child: LoginForm())
+              )
+            ],
+          )
+      )
     );
   }
 }

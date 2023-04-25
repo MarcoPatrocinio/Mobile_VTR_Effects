@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:vtr_effects/pages/page_produtos.dart';
 //import 'package:http/http.dart' as http;
 //import '../../pages/page_select_function.dart';
 
@@ -82,8 +83,7 @@ class _LoginFormState extends State<LoginForm>{
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        body: Padding(
+    return Padding(
           padding: const EdgeInsets.all(10),
           child: Form(
             child: ListView(
@@ -146,7 +146,7 @@ class _LoginFormState extends State<LoginForm>{
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     ElevatedButton(
-                      onPressed: (() => debugPrint("")),child: const Text("Login"),
+                      onPressed: (() => Navigator.pushNamed(context, '/produtos')),child: const Text("Login"),
                       style: ButtonStyle(
                         fixedSize: MaterialStateProperty.all(const Size(125, 35))
                       ),
@@ -169,11 +169,9 @@ class _LoginFormState extends State<LoginForm>{
                     )*/
                   ],
                 )
-
               ],
             ),
           ),
-        )
-    );
+        );
   }
 }
