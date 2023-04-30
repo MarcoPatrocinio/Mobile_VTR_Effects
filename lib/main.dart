@@ -3,6 +3,7 @@ import 'package:vtr_effects/colors/primaria.dart';
 import 'package:vtr_effects/pages/page_fale_conosco.dart';
 import 'package:vtr_effects/pages/page_login.dart';
 import 'package:vtr_effects/pages/page_produtos.dart';
+import 'package:vtr_effects/pages/sobre_nos.dart';
 
 void main() {
   runApp(const MyApp());
@@ -11,9 +12,6 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
   static const primaria = mapPrimaryColor;
-
-
-
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -28,7 +26,8 @@ class MyApp extends StatelessWidget {
       routes: {
         '/home': (context) => const PageLogin(),
         '/produtos': (context) => const PageProdutos(),
-        '/faleconosco': (context) => const PageFaleConosto()
+        '/faleconosco': (context) => const PageFaleConosto(),
+        '/sobrenos': (context) => const PageSobreNos()
       },
       debugShowCheckedModeBanner: false,
     );

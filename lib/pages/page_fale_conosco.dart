@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
+
 
 class PageFaleConosto extends StatefulWidget {
   const PageFaleConosto({Key? key}) : super(key: key);
@@ -148,7 +151,8 @@ class _PageFaleConostoState extends State<PageFaleConosto> {
                       ],
                     ),
                   ),
-                  Padding(
+                  Container(
+                      margin: EdgeInsets.only(top: 25),
                       padding: EdgeInsets.all(10),
                       child: Flexible(
                         fit: FlexFit.loose,
@@ -159,23 +163,6 @@ class _PageFaleConostoState extends State<PageFaleConosto> {
                       ),
                   ),
                   //Colocar o Flutter MAP
-                  SizedBox(
-                    height: 300,
-                    child: FlutterMap(
-                      options: MapOptions(
-                        center: LatLng(51.5, -0.09),
-                        zoom: 5,
-                      ),
-                      children: [
-                        TileLayer(
-                          urlTemplate:
-                          'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                          userAgentPackageName: 'dev.fleaflet.flutter_map.example',
-                        ),
-
-                      ],
-                    ),
-                  ),
                 ],
               ),
             ),
@@ -197,12 +184,30 @@ class _PageFaleConostoState extends State<PageFaleConosto> {
                     direction: Axis.horizontal,
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      Icon(Icons.facebook, color: Color(0xFFBDB133),),
-                      Icon(Icons.facebook, color: Color(0xFFBDB133),),
-                      Icon(Icons.facebook, color: Color(0xFFBDB133),),
-                      Icon(Icons.facebook, color: Color(0xFFBDB133),),
-                      Icon(Icons.facebook, color: Color(0xFFBDB133),),
-                      Icon(Icons.facebook, color: Color(0xFFBDB133),),
+                      GestureDetector(
+        onTap: () => launchUrl(Uri.parse('https://www.facebook.com/vtreffects')),
+        child: Icon(FontAwesomeIcons.facebook, color: Color(0xFFBDB133)),
+      ),
+      GestureDetector(
+        onTap: () => launchUrl(Uri.parse('https://www.youtube.com/channel/UC8iMcPCRQ4hOJqsdQ5tgN7A')),
+        child: Icon(FontAwesomeIcons.youtube, color: Color(0xFFBDB133)),
+      ),
+      GestureDetector(
+        onTap: () => launchUrl(Uri.parse('https://www.instagram.com/vtreffects/')),
+        child: Icon(FontAwesomeIcons.instagram, color: Color(0xFFBDB133)),
+      ),
+      GestureDetector(
+        onTap: () => launchUrl(Uri.parse('https://www.linkedin.com/uas/login?session_redirect=%2Fcompany%2F11201246')),
+        child: Icon(FontAwesomeIcons.linkedin, color: Color(0xFFBDB133)),
+      ),
+      GestureDetector(
+        onTap: () => launchUrl(Uri.parse('https://twitter.com/vtreffects')),
+        child: Icon(FontAwesomeIcons.twitter, color: Color(0xFFBDB133)),
+      ),
+      GestureDetector(
+        onTap: () => launchUrl(Uri.parse('https://api.whatsapp.com/send/?phone=5527998660610&text&type=phone_number&app_absent=0')),
+        child: Icon(FontAwesomeIcons.whatsapp, color: Color(0xFFBDB133)),
+      ),
                     ]
                 ),
               ),

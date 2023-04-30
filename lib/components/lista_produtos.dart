@@ -109,6 +109,7 @@ class _ListaProdutosState extends State<ListaProdutos>{
                       ),
                     ),
                     InkWell(
+                      onTap: () => Navigator.pushNamed(context, '/sobrenos'),
                       child: Text(
                         "Sobre nós",
                         style: TextStyle(
