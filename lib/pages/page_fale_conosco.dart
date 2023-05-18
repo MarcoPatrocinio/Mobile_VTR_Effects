@@ -159,6 +159,7 @@ class _PageFaleConostoState extends State<PageFaleConosto> {
                         child: Image(
                           image: AssetImage('lib/assets/Local.png'),
                           width: 65,
+                          height: 180,
                         ),
                       ),
                   ),
