@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "405732538133",
+    "project_id": "vtreffects-7acdd",
+    "storage_bucket": "vtreffects-7acdd.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:405732538133:android:c828516270025c2a4cdb1c",
+        "android_client_info": {
+          "package_name": "com.vtreffects.vtr_effects"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "405732538133-g59mcn9c239cirtjj302i4ea7vv1957h.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAkRk8yCVmFG5kGH24ktJBOkXJVTnUM4r8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "405732538133-g59mcn9c239cirtjj302i4ea7vv1957h.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
