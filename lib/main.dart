@@ -1,11 +1,16 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:vtr_effects/colors/primaria.dart';
 import 'package:vtr_effects/pages/page_fale_conosco.dart';
 import 'package:vtr_effects/pages/page_login.dart';
 import 'package:vtr_effects/pages/page_produtos.dart';
 import 'package:vtr_effects/pages/sobre_nos.dart';
+import 'package:firebase_core/firebase_core.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+
   runApp(const MyApp());
 }
 

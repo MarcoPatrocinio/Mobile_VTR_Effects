@@ -1,7 +1,10 @@
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:vtr_effects/pages/page_produtos.dart';
+
 //import 'package:http/http.dart' as http;
 //import '../../pages/page_select_function.dart';
 
@@ -74,12 +77,18 @@ class LoginForm extends StatefulWidget{
   _LoginFormState createState() => _LoginFormState();
 }
 class _LoginFormState extends State<LoginForm>{
-
+  final db = FirebaseFirestore.instance;
   String login = '';
   String senha = '';
-
   final getData = Map<String, String>();
-
+  final user = <String, dynamic>{
+    "first": "Ada",
+    "last": "Lovelace",
+    "born": 1815
+  };
+  buttonClick() {
+    db.collection("users").add(user);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -146,10 +155,11 @@ class _LoginFormState extends State<LoginForm>{
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     ElevatedButton(
-                      onPressed: (() => Navigator.pushNamed(context, '/produtos')),child: const Text("Login"),
+                      onPressed: (() => buttonClick()),
                       style: ButtonStyle(
                         fixedSize: MaterialStateProperty.all(const Size(125, 35))
-                      ),
+                      ),//Navigator.pushNamed(context, '/produtos'))
+                      child: const Text("Login"),
                     ),//checkCredencials(context, login, senha)), child: const Text('Entrar'))
                     const InkWell(
                       child: Text(

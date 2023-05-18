@@ -36,6 +36,10 @@ dependencies:
   font_awesome_flutter: ^10.4.0
   permission_handler: ^10.2.0
   cupertino_icons: ^1.0.2
+  http:
+  provider:
+  firebase_core: ^2.13.0
+  cloud_firestore: ^4.7.1
 
 dev_dependencies:
   flutter_test:
