@@ -1,9 +1,51 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../classes/redes_sociais.dart';
+import '../classes/sobre_nos.dart';
+
+Future<SobreNos> getInfos() async {
+  final db = FirebaseFirestore.instance;
+  int error = 0;
+  SobreNos info = await db.collection('sobre_nos').get().then((querySnapshot) {
+    for (var docSnapshot in querySnapshot.docs) {
+      final data = docSnapshot.data();
+      return SobreNos(
+          id: data['id'],
+          email: data['email'],
+          endereco: data['endereco'],
+          telefone: data['telefone'],
+          historia: data['historia'],
+          redes_sociais: RedesSociais(
+            facebook: data['redes_sociais']['facebook'],
+            instagram: data['redes_sociais']['instagram'],
+            linkedin: data['redes_sociais']['linkedin'],
+            twitter: data['redes_sociais']['twitter'],
+            whatsapp: data['redes_sociais']['whatsapp'],
+            youtube: data['redes_sociais']['youtube'],
+          )
+      );
+      //print('${docSnapshot.id} => ${docSnapshot.data()}');
+    }
+    return const SobreNos(id: 0, email: "", endereco: "endereco", telefone: "telefone", historia: "historia",
+        redes_sociais: RedesSociais(
+            facebook: "facebook",
+            instagram: "instagram",
+            linkedin: "linkedin",
+            twitter: "twitter",
+            whatsapp: "whatsapp",
+            youtube: "youtube"
+        )
+    );
+  },
+    onError: (e) => Exception("a"),
+  );
+  return info;
+}
 
 class PageFaleConosto extends StatefulWidget {
   const PageFaleConosto({Key? key}) : super(key: key);
@@ -14,19 +56,13 @@ class PageFaleConosto extends StatefulWidget {
 
 class _PageFaleConostoState extends State<PageFaleConosto> {
   // Informações de contato
-  final String email = "contato@vtreffects.com";
-  final String telefone = "+55 27 99866-0610";
-  final String endereco = "Faculdade UCL (Campus Manguinhos), ES-010, Km 06 - Manguinhos, Serra - ES, 29173-087, Brasil";
+  late Future<SobreNos> infos;
 
-  // Redes sociais
-  final Map<String, String> redesSociais = {
-    "linkedin": "https://www.linkedin.com/empresa",
-    "youtube": "https://www.youtube.com/empresa",
-    "twitter": "https://www.twitter.com/empresa",
-    "facebook": "https://www.facebook.com/empresa",
-    "instagram": "https://www.instagram.com/empresa",
-    "whatsapp": "https://wa.me/5511999999999",
-  };
+  @override
+  void initState() {
+    super.initState();
+    infos = getInfos();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -71,101 +107,119 @@ class _PageFaleConostoState extends State<PageFaleConosto> {
         child: Column(
           children: [
             Expanded(
-              child: ListView(
-                children: [
-                  Padding(
-                    padding: EdgeInsets.only(left: 15, top: 15),
-                    child: Flex(
-                      direction: Axis.horizontal,
-                      children: [
-                        Text(
-                          "Email: ",
-                          style: TextStyle(
-                              color: Color(0xFFBDB133),
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold
+              child: FutureBuilder<SobreNos>(
+                  future: infos,
+                  builder: (context, snapshot){
+                    if(snapshot.hasData){
+                      return ListView(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(left: 15, top: 15),
+                            child: Flex(
+                              direction: Axis.horizontal,
+                              children: [
+                                const Text(
+                                  "Email: ",
+                                  style: TextStyle(
+                                      color: Color(0xFFBDB133),
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold
+                                  ),
+                                ),
+                                Text(
+                                  '${snapshot.data?.email}',
+                                  style: const TextStyle(
+                                      color: Color(0xFFBDB133),
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      decoration: TextDecoration.underline
+                                  ),
+                                )
+                              ],
+                            ),
                           ),
-                        ),
-                        Text(
-                          email,
-                          style: TextStyle(
-                              color: Color(0xFFBDB133),
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              decoration: TextDecoration.underline
+                          Padding(
+                            padding: const EdgeInsets.only(left: 15, top: 15),
+                            child: Flex(
+                              direction: Axis.horizontal,
+                              children: [
+                                const Text(
+                                  "Telefone: ",
+                                  style: TextStyle(
+                                      color: Color(0xFFBDB133),
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold
+                                  ),
+                                ),
+                                Text(
+                                  '${snapshot.data?.telefone}',
+                                  style: const TextStyle(
+                                      color: Color(0xFFBDB133),
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      decoration: TextDecoration.underline
+                                  ),
+                                )
+                              ],
+                            ),
                           ),
-                        )
-                      ],
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(left: 15, top: 15),
-                    child: Flex(
-                      direction: Axis.horizontal,
-                      children: [
-                        Text(
-                          "Telefone: ",
-                          style: TextStyle(
-                              color: Color(0xFFBDB133),
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold
+                          Padding(
+                            padding: const EdgeInsets.only(left: 15, top: 15),
+                            child: Flex(
+                              direction: Axis.horizontal,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  "Endereço: ",
+                                  style: TextStyle(
+                                      color: Color(0xFFBDB133),
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold
+                                  ),
+                                ),
+                                Flexible(
+                                    child: Text(
+                                      '${snapshot.data?.endereco}',
+                                      style: const TextStyle(
+                                          color: Color(0xFFBDB133),
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
+                                          decoration: TextDecoration.underline
+                                      ),
+                                    )
+                                )
+                              ],
+                            ),
                           ),
-                        ),
-                        Text(
-                          telefone,
-                          style: TextStyle(
-                              color: Color(0xFFBDB133),
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              decoration: TextDecoration.underline
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(left: 15, top: 15),
-                    child: Flex(
-                      direction: Axis.horizontal,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Endereço: ",
-                          style: TextStyle(
-                              color: Color(0xFFBDB133),
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold
-                          ),
-                        ),
-                        Flexible(
-                            child: Text(
-                              endereco,
-                              style: TextStyle(
-                                  color: Color(0xFFBDB133),
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  decoration: TextDecoration.underline
+                          Container(
+                            margin: const EdgeInsets.only(top: 25),
+                            padding: const EdgeInsets.all(10),
+                            child: const Flexible(
+                              fit: FlexFit.loose,
+                              child: Image(
+                                image: AssetImage('lib/assets/Local.png'),
+                                width: 65,
+                                height: 180,
                               ),
-                            )
-                        )
-                      ],
-                    ),
-                  ),
-                  Container(
-                      margin: EdgeInsets.only(top: 25),
-                      padding: EdgeInsets.all(10),
-                      child: Flexible(
-                        fit: FlexFit.loose,
-                        child: Image(
-                          image: AssetImage('lib/assets/Local.png'),
-                          width: 65,
-                          height: 180,
+                            ),
+                          ),
+                          //Colocar o Flutter MAP
+                        ],
+                      );
+                    }
+                    else if(snapshot.hasError){
+                      return Text("${snapshot.error}",
+                        textAlign: TextAlign.justify,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          color: Colors.white,
                         ),
-                      ),
-                  ),
-                  //Colocar o Flutter MAP
-                ],
-              ),
+                      );
+                    } else{
+                      return const CircularProgressIndicator();
+                    }
+                  },
+                )
             ),
             PreferredSize(
               preferredSize: const Size.fromHeight(10.0), // altura da borda
@@ -177,42 +231,60 @@ class _PageFaleConostoState extends State<PageFaleConosto> {
                 ),
               ),
             ),
-            Padding(
-              padding: EdgeInsets.only(bottom: 0),
-              child: Container(
-                height: 50,
-                child: Flex(
-                    direction: Axis.horizontal,
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      GestureDetector(
-        onTap: () => launchUrl(Uri.parse('https://www.facebook.com/vtreffects')),
-        child: Icon(FontAwesomeIcons.facebook, color: Color(0xFFBDB133)),
-      ),
-      GestureDetector(
-        onTap: () => launchUrl(Uri.parse('https://www.youtube.com/channel/UC8iMcPCRQ4hOJqsdQ5tgN7A')),
-        child: Icon(FontAwesomeIcons.youtube, color: Color(0xFFBDB133)),
-      ),
-      GestureDetector(
-        onTap: () => launchUrl(Uri.parse('https://www.instagram.com/vtreffects/')),
-        child: Icon(FontAwesomeIcons.instagram, color: Color(0xFFBDB133)),
-      ),
-      GestureDetector(
-        onTap: () => launchUrl(Uri.parse('https://www.linkedin.com/uas/login?session_redirect=%2Fcompany%2F11201246')),
-        child: Icon(FontAwesomeIcons.linkedin, color: Color(0xFFBDB133)),
-      ),
-      GestureDetector(
-        onTap: () => launchUrl(Uri.parse('https://twitter.com/vtreffects')),
-        child: Icon(FontAwesomeIcons.twitter, color: Color(0xFFBDB133)),
-      ),
-      GestureDetector(
-        onTap: () => launchUrl(Uri.parse('https://api.whatsapp.com/send/?phone=5527998660610&text&type=phone_number&app_absent=0')),
-        child: Icon(FontAwesomeIcons.whatsapp, color: Color(0xFFBDB133)),
-      ),
-                    ]
-                ),
-              ),
-            )
+            FutureBuilder<SobreNos>(
+              future: infos,
+                builder: (context, snapshot) {
+                  if(snapshot.hasData){
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 0),
+                      child: SizedBox(
+                        height: 50,
+                        child: Flex(
+                            direction: Axis.horizontal,
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              GestureDetector(
+                                onTap: () => launchUrl(Uri.parse('${snapshot.data?.redes_sociais.facebook}')),
+                                child: const Icon(FontAwesomeIcons.facebook, color: Color(0xFFBDB133)),
+                              ),
+                              GestureDetector(
+                                onTap: () => launchUrl(Uri.parse('${snapshot.data?.redes_sociais.youtube}')),
+                                child: const Icon(FontAwesomeIcons.youtube, color: Color(0xFFBDB133)),
+                              ),
+                              GestureDetector(
+                                onTap: () => launchUrl(Uri.parse('${snapshot.data?.redes_sociais.instagram}')),
+                                child: const Icon(FontAwesomeIcons.instagram, color: Color(0xFFBDB133)),
+                              ),
+                              GestureDetector(
+                                onTap: () => launchUrl(Uri.parse('${snapshot.data?.redes_sociais.linkedin}')),
+                                child: const Icon(FontAwesomeIcons.linkedin, color: Color(0xFFBDB133)),
+                              ),
+                              GestureDetector(
+                                onTap: () => launchUrl(Uri.parse('${snapshot.data?.redes_sociais.twitter}')),
+                                child: const Icon(FontAwesomeIcons.twitter, color: Color(0xFFBDB133)),
+                              ),
+                              GestureDetector(
+                                onTap: () => launchUrl(Uri.parse('${snapshot.data?.redes_sociais.whatsapp}')),
+                                child: const Icon(FontAwesomeIcons.whatsapp, color: Color(0xFFBDB133)),
+                              ),
+                            ]
+                        ),
+                      ),
+                    );
+                  }
+                  else if(snapshot.hasError){
+                    return Text("${snapshot.error}",
+                      textAlign: TextAlign.justify,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        color: Colors.white,
+                      ),
+                    );
+                  } else{
+                    return const CircularProgressIndicator();
+                  }
+                }
+            ),
           ],
         ),
       )

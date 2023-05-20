@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:vtr_effects/colors/primaria.dart';
+import 'package:vtr_effects/pages/page_cadastro.dart';
 import 'package:vtr_effects/pages/page_fale_conosco.dart';
 import 'package:vtr_effects/pages/page_login.dart';
 import 'package:vtr_effects/pages/page_produtos.dart';
@@ -32,7 +33,8 @@ class MyApp extends StatelessWidget {
         '/home': (context) => const PageLogin(),
         '/produtos': (context) => const PageProdutos(),
         '/faleconosco': (context) => const PageFaleConosto(),
-        '/sobrenos': (context) => const PageSobreNos()
+        '/sobrenos': (context) => const PageSobreNos(),
+        '/cadastrar': (context) => const PageCadastro(),
       },
       debugShowCheckedModeBanner: false,
     );

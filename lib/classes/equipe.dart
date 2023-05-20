@@ -1,15 +1,13 @@
-class Produto {
+class Equipe {
   final int id;
   final String nome;
   final String imagem;
-  final String descricao;
-  final double preco;
+  final String funcao;
 
-  const Produto({
+  const Equipe({
     required this.id,
     required this.nome,
     required this.imagem,
-    required this.descricao,
-    required this.preco,
+    required this.funcao,
   });
 }

@@ -1,6 +1,67 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:vtr_effects/classes/equipe.dart';
+import 'package:vtr_effects/classes/redes_sociais.dart';
+import 'package:vtr_effects/classes/sobre_nos.dart';
+
+import '../classes/sobre_nos.dart';
+
+Future<List<Equipe>>? getEquipe() async {
+  final db = FirebaseFirestore.instance;
+  List<Equipe> lista = <Equipe>[];
+  await db.collection('equipe').orderBy('id', descending: false).get().then((querySnapshot) {
+    for (var docSnapshot in querySnapshot.docs) {
+      final data = docSnapshot.data();
+      lista.add(
+          Equipe(id: data['id'], nome: data['nome'], imagem: data['imagem'], funcao: data['funcao'])
+      );
+      //print('${docSnapshot.id} => ${docSnapshot.data()}');
+    }
+  },
+    onError: (e) => print("Error completing: $e"),
+  );
+  return lista;
+}
+
+Future<SobreNos> getInfos() async {
+  final db = FirebaseFirestore.instance;
+  int error = 0;
+  SobreNos info = await db.collection('sobre_nos').get().then((querySnapshot) {
+    for (var docSnapshot in querySnapshot.docs) {
+      final data = docSnapshot.data();
+      return SobreNos(
+          id: data['id'],
+          email: data['email'],
+          endereco: data['endereco'],
+          telefone: data['telefone'],
+          historia: data['historia'],
+          redes_sociais: RedesSociais(
+            facebook: data['redes_sociais']['facebook'],
+            instagram: data['redes_sociais']['instagram'],
+            linkedin: data['redes_sociais']['linkedin'],
+            twitter: data['redes_sociais']['twitter'],
+            whatsapp: data['redes_sociais']['whatsapp'],
+            youtube: data['redes_sociais']['youtube'],
+          )
+      );
+      //print('${docSnapshot.id} => ${docSnapshot.data()}');
+    }
+    return const SobreNos(id: 0, email: "", endereco: "endereco", telefone: "telefone", historia: "historia",
+        redes_sociais: RedesSociais(
+            facebook: "facebook",
+            instagram: "instagram",
+            linkedin: "linkedin",
+            twitter: "twitter",
+            whatsapp: "whatsapp",
+            youtube: "youtube")
+    );
+  },
+    onError: (e) => Exception("a"),
+  );
+  return info;
+}
 
 class PageSobreNos extends StatefulWidget {
   const PageSobreNos({Key? key}) : super(key: key);
@@ -10,65 +71,16 @@ class PageSobreNos extends StatefulWidget {
 }
 
 class _PageSobreNosState extends State<PageSobreNos> {
-  // Informações de contato
-  final String texto = "O ano era 2015 e nosso fundador Ítalo se encontrava"
-      " insatisfeito com sua pedaleira Zoom G1. Sonhava em desbravar o mundo"
-      " dos efeitos, mas não tinha recursos financeiros para investir em um"
-      " setup de pedais ou mesmo em uma nova pedaleira. Contudo, a limitação"
-      " financeira não foi um empecilho para ele. Pelo contrário, diante deste"
-      " cenário encontrou o ambiente perfeito para a idealização de um pedal,"
-      " que de forma despretensiosa se tornaria o sonho chamado VTR EFFECTS."
-      "Desde muito novo sempre observava seu pai, mesmo sem formação na área,"
-      " consertando alguns equipamentos de casa. Isto o tornou apaixonado por "
-      "eletrônica, fazendo com que ele buscasse uma formação técnica. Naquele "
-      "ano, ele já estava no 3º período do curso técnico em eletrotécnica, e "
-      "apesar de já ter passado anteriormente na cabeça dele a ideia de montar "
-      "o seu próprio pedal, isso só se torna realmente possível naquele ano. "
-      "E sim, foi um clássico clone do Tube Screamer TS808 em uma caixinha "
-      "Hammond pintada com tinta spray. Após montar o primeiro pedal e testar "
-      "junto com um amigo guitarrista, este projeto se tornou algo mágico,"
-      " e a ideia de criar sua marca de pedais começou a florescer aos poucos!"
-      "Após fazer mais alguns pedais clones e estudar bastante sobre este "
-      "assunto, ele se deparou com um mercado brasileiro muito carente de "
-      "empresas que buscassem romper paradigmas, desenvolvendo produtos "
-      "realmente inovadores que suprissem as necessidades do consumidor. "
-      "O que ele sempre ouvia por ai era que não se existia bons pedais de "
-      "guitarra fabricados no Brasil, que um pedal estrangeiro sempre será "
-      "superior, porém aquela ideia não descia para ele, que logo vislumbrou"
-      " que poderia trazer algo de diferente para o mercado, e ai começou a "
-      "trajetória de fundação da VTR. É bem provável que você tenha se "
-      "perguntado o que significa “VTR”, já que não é uma abreviação do"
-      " nome do fundador como de costume, e para entender o significado de "
-      "“VTR” é preciso saber um pouquinho do local por onde tudo começou, "
-      "que é a maravilhosa cidade de Vitória, a ilha que é capital do estado "
-      "do Espirito Santo, Ítalo nasceu em Vitória e na época que esses fatos "
-      "narrados aconteceram ele ainda morava lá, e como todo capixaba da gema, "
-      "ele também é apaixonado por essa ilha, e queria criar uma marca que "
-      "ajudasse a fazer sua cidade ser mais reconhecida mundo afora, pelas "
-      "maravilhas que se encontra por lá, então a partir disto surgiu o nome "
-      "VTR, que é uma abreviação de Vitória, e para completar uma palavra que"
-      " faz jus aos produtos da empresa, e assim surgiu VTR Effects."
-      "Para realmente tirar do papel a VTR, Ítalo precisava de capital "
-      "financeiro, algo que ele não tinha, então entrou em cena seu professor,"
-      " Denilson Machado, um engenheiro eletricista fã de punk que acompanhou"
-      " todo o processo de Ítalo aprendendo a montar seus primeiros pedais,"
-      " ele era quem conseguia liberar o acesso de Ítalo ao laboratório da"
-      " escola e assim poder usar as ferramentas para montar seus pedais.";
 
-  final String email = "contato@vtreffects.com";
-  final String telefone = "+55 27 99866-0610";
-  final String endereco =
-      "Faculdade UCL (Campus Manguinhos), ES-010, Km 06 - Manguinhos, Serra - ES, 29173-087, Brasil";
+  late Future<List<Equipe>>? futureEquipe;
+  late Future<SobreNos> infos;
 
-  // Redes sociais
-  final Map<String, String> redesSociais = {
-    "linkedin": "https://www.linkedin.com/empresa",
-    "youtube": "https://www.youtube.com/empresa",
-    "twitter": "https://www.twitter.com/empresa",
-    "facebook": "https://www.facebook.com/empresa",
-    "instagram": "https://www.instagram.com/empresa",
-    "whatsapp": "https://wa.me/5511999999999",
-  };
+  @override
+  void initState() {
+    super.initState();
+    futureEquipe = getEquipe();
+    infos = getInfos();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -132,13 +144,30 @@ class _PageSobreNosState extends State<PageSobreNos> {
               ),
               Container(
                 margin: const EdgeInsets.all(5),
-                child: Text(
-                  texto,
-                  textAlign: TextAlign.justify,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    color: Colors.white,
-                  ),
+                child: FutureBuilder<SobreNos>(
+                  future: infos,
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData){
+                      return Text(
+                        '${snapshot.data?.historia}',
+                        textAlign: TextAlign.justify,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          color: Colors.white,
+                        ),
+                      );
+                    } else if(snapshot.hasError){
+                      return Text("${snapshot.error}",
+                        textAlign: TextAlign.justify,
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.white,
+                        ),
+                      );
+                    } else{
+                      return const CircularProgressIndicator();
+                    }
+                  },
                 ),
               ),
               SizedBox(
@@ -157,41 +186,85 @@ class _PageSobreNosState extends State<PageSobreNos> {
                     ),
                   )
               ),
-              ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: 8, // número de membros da equipe
-                itemBuilder: (BuildContext context, int index) {
-                  return Row(
-                    children: [
-                      ClipOval(
-                        child: Image.network(
-                          'https://vtreffects.com.br/wp-content/uploads/2022/12/Design-sem-nome-2.png',
-                          width: 200,
-                          height: 200,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ],
-                  );
-                  /*Container(
-                    child: Row(
-                      children: [
-
-                      ],
-                    )
-                  ),
-
-                    Text(
-                        'Membro ${index + 1}',
-                        style: TextStyle(
-                          fontSize: 26
-                        ),
-                    ),
-                    subtitle: Text('Função do Membro ${index + 1}'),
-                  )*/
-                },
-              ),
+              FutureBuilder<List<Equipe>>(
+                  future: futureEquipe,
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      return ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: snapshot.data?.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            return Column(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 25),
+                                  child: ClipOval(
+                                    child: Image.network(
+                                      '${snapshot.data?[index].imagem}',
+                                      width: 200,
+                                      height: 200,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                ),
+                                Text(
+                                    '${snapshot.data?[index].nome}',
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(
+                                      fontSize: 24,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w600
+                                    )
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(bottom: 25),
+                                  child: Text(
+                                      '${snapshot.data?[index].funcao}',
+                                      textAlign: TextAlign.center,
+                                      style: const TextStyle(
+                                        fontSize: 20,
+                                        color: Colors.white,
+                                          fontWeight: FontWeight.w300
+                                      )
+                                  ),
+                                )
+                                /*Expanded(
+                                    child: Row(
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      mainAxisSize: MainAxisSize.max,
+                                      children: [
+                                        Text(
+                                            '${snapshot.data?[index].nome}',
+                                            textAlign: TextAlign.center,
+                                            style: const TextStyle(
+                                              fontSize: 16,
+                                              color: Colors.white,
+                                            )
+                                        ),
+                                        Text(
+                                            '${snapshot.data?[index].funcao}',
+                                            textAlign: TextAlign.center,
+                                            style: const TextStyle(
+                                              fontSize: 16,
+                                              color: Colors.white,
+                                            )
+                                        ),
+                                      ],
+                                    )
+                                )*/
+                              ],
+                            );
+                          }
+                      );
+                    }
+                    else if (snapshot.hasError) {
+                      return Text('${snapshot.error}');
+                    }
+                    return const CircularProgressIndicator();
+                  }
+              )
             ],
           ),
         )

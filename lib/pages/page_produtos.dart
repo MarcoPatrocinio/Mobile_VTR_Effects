@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:vtr_effects/components/lista_produtos.dart';
 
 class PageProdutos extends StatelessWidget{
-  const PageProdutos({Key? key}) : super(key: key);
+  final idUser;
+  const PageProdutos({this.idUser});
+
 
   @override
   Widget build(BuildContext context){
@@ -45,7 +47,7 @@ class PageProdutos extends StatelessWidget{
         ),
         backgroundColor: const Color(0xFF04121F),
       ),
-      body: const ListaProdutos(),
+      body: ListaProdutos(idUser),
       );
   }
 }
