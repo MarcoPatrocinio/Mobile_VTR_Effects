@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:vtr_effects/components/lista_produtos.dart';
 
 import '../classes/usuario.dart';
+import '../components/cabecalho_paginas.dart';
 
 class PageProdutos extends StatelessWidget{
   final Usuario user;
@@ -24,30 +25,7 @@ class PageProdutos extends StatelessWidget{
             ),
           ),
         ),
-        title: Flex(
-          direction: Axis.horizontal,
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: const [
-            Flexible(
-              fit: FlexFit.loose,
-              child: Image(
-                  image: AssetImage('lib/assets/VTREffectsLogo.png'),
-                width: 65,
-              ),
-            ),
-            Flexible(
-              fit: FlexFit.tight,
-              child: Text(
-                'Produtos',
-                style: TextStyle(
-                fontSize: 32,
-                fontWeight: FontWeight.w500,
-                color: Color(0xFFBDB133)
-                ),
-              ),
-            ),
-          ],
-        ),
+        title: const CabecalhoPaginas(nomePagina: "Produtos"),
         backgroundColor: const Color(0xFF04121F),
       ),
       body: ListaProdutos(usuario: user),

@@ -4,6 +4,7 @@ import 'package:vtr_effects/components/veja_mais.dart';
 
 import '../classes/produto.dart';
 import '../classes/usuario.dart';
+import '../components/cabecalho_paginas.dart';
 
 class PageVejaMais extends StatelessWidget{
   final Usuario user;
@@ -27,30 +28,7 @@ class PageVejaMais extends StatelessWidget{
             ),
           ),
         ),
-        title: Flex(
-          direction: Axis.horizontal,
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: const [
-            Flexible(
-              fit: FlexFit.loose,
-              child: Image(
-                image: AssetImage('lib/assets/VTREffectsLogo.png'),
-                width: 65,
-              ),
-            ),
-            Flexible(
-              fit: FlexFit.tight,
-              child: Text(
-                'Detalhe',
-                style: TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.w500,
-                    color: Color(0xFFBDB133)
-                ),
-              ),
-            ),
-          ],
-        ),
+        title: const CabecalhoPaginas(nomePagina: "Detalhe"),
         backgroundColor: const Color(0xFF04121F),
       ),
       body: VejaMais(usuario: user, produto: produto,),

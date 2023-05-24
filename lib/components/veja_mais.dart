@@ -26,7 +26,7 @@ class _VejaMaisState extends State<VejaMais>{
   double? _progressFirmware;
   double? _progressManual;
   double? _progressGarantia;
-
+  late String novoComentario;
   final Usuario usuario;
   final Produto produto;
   _VejaMaisState(this.usuario, this.produto);
@@ -152,6 +152,63 @@ class _VejaMaisState extends State<VejaMais>{
     return Container();
   }
 
+  Widget verAddComentario(){
+    if(usuario.produtos.contains(produto.id)){
+      return ElevatedButton(
+        onPressed:  () async {
+          print('Comentario');
+          showModalBottomSheet(
+              context: context,
+              backgroundColor: const Color(0xFF04121F),
+              builder: (BuildContext context) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.all(10),
+                        child: TextFormField(
+                          maxLines: 6,
+                          decoration: const InputDecoration(
+                              labelText: '',
+                              labelStyle: TextStyle(
+                                  color: Color(0xFF000000)
+                              ),
+                              filled: true,
+                              fillColor: Color(0xFFBDB133)
+                          ),
+                          textInputAction: TextInputAction.next,
+                          onChanged: (coment) => novoComentario = coment,
+                          autofocus: true,
+                        ),
+                      ),
+                      Flex(
+                        direction: Axis.horizontal,
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          ElevatedButton(
+                            child: const Text('Cancelar'),
+                            onPressed: () => Navigator.pop(context),
+                          ),
+                          ElevatedButton(
+                            child: const Text('Adicionar'),
+                            onPressed: () => Navigator.pop(context),
+                          )
+                        ],
+                      )
+                    ],
+                  ),
+                );
+              }
+          );
+        },
+        child: const Text("Adicionar Comentario"),
+      );
+    }
+    return Container();
+  }
+
   @override
   Widget build(BuildContext context) {
     return
@@ -181,20 +238,10 @@ class _VejaMaisState extends State<VejaMais>{
               )
             )
           ),
-          const Padding(
-            padding: EdgeInsets.only(top: 5, bottom: 5),
-            child: Text(
-              "Envio no dia DD/MM/YYYY",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                  fontSize: 15,
-                  color: Colors.red
-              ),
-            ),
-          ),
           Padding(
-              padding: EdgeInsets.only(top: 5, bottom: 5),
-            child: Text(produto.preco,
+              padding: const EdgeInsets.only(top: 5, bottom: 5),
+            child: Text(
+              produto.preco,
               textAlign: TextAlign.center,
               style: const TextStyle(
                   fontSize: 15,
@@ -297,17 +344,12 @@ class _VejaMaisState extends State<VejaMais>{
                   ),
                 ],
               );
-              /*
-              ListTile(
-                title: Text("${comentario['com']}",
-                  style: const TextStyle(
-                      fontSize: 15,
-                      color: Colors.white
-                  ),
-                ),
-              );*/
             },
-          )
+          ),
+          Padding(
+            padding: const EdgeInsets.only(top: 5, bottom: 5),
+            child: verAddComentario(),
+          ),
       ],
     );
   }

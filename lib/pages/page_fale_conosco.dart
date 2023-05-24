@@ -7,6 +7,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../classes/redes_sociais.dart';
 import '../classes/sobre_nos.dart';
+import '../components/cabecalho_paginas.dart';
 
 Future<SobreNos> getInfos() async {
   final db = FirebaseFirestore.instance;
@@ -80,27 +81,7 @@ class _PageFaleConostoState extends State<PageFaleConosto> {
             ),
           ),
         ),
-        title: Flex(
-          direction: Axis.horizontal,
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: const [
-            Flexible(
-              fit: FlexFit.loose,
-              child: Image(
-                image: AssetImage('lib/assets/VTREffectsLogo.png'),
-                width: 65,
-              ),
-            ),
-            Text(
-                'Fale Conosco',
-                style: TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.w500,
-                    color: Color(0xFFBDB133)
-                ),
-            ),
-          ],
-        ),
+        title: const CabecalhoPaginas(nomePagina: "Contato"),
         backgroundColor: const Color(0xFF04121F),
       ),
       body: Container(

@@ -7,6 +7,7 @@ import 'package:vtr_effects/classes/redes_sociais.dart';
 import 'package:vtr_effects/classes/sobre_nos.dart';
 
 import '../classes/sobre_nos.dart';
+import '../components/cabecalho_paginas.dart';
 
 Future<List<Equipe>>? getEquipe() async {
   final db = FirebaseFirestore.instance;
@@ -100,26 +101,7 @@ class _PageSobreNosState extends State<PageSobreNos> {
               ),
             ),
           ),
-          title: Flex(
-            direction: Axis.horizontal,
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: const [
-              Flexible(
-                fit: FlexFit.loose,
-                child: Image(
-                  image: AssetImage('lib/assets/VTREffectsLogo.png'),
-                  width: 65,
-                ),
-              ),
-              Text(
-                'Sobre Nós',
-                style: TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.w500,
-                    color: Color(0xFFBDB133)),
-              ),
-            ],
-          ),
+          title: const CabecalhoPaginas(nomePagina: "Sobre Nos"),
           backgroundColor: const Color(0xFF04121F),
         ),
         body: SingleChildScrollView(
