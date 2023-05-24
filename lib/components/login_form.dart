@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:vtr_effects/classes/usuario.dart';
 import 'package:vtr_effects/pages/page_produtos.dart';
 
 class LoginForm extends StatefulWidget{
@@ -15,21 +16,16 @@ class _LoginFormState extends State<LoginForm>{
   final db = FirebaseFirestore.instance;
   String login = '';
   String senha = '';
-  final getData = Map<String, String>();
 
   buttonClick() async {
     final usersRef = db.collection('usuarios').where("email", isEqualTo: login).get().then(
           (querySnapshot) {
-        print("Successfully completed");
-        print("Data Lenght ${querySnapshot.size}");
         if(querySnapshot.size > 0){
           for (var docSnapshot in querySnapshot.docs) {
             final data = docSnapshot.data();
-            print('usuario id: ${data['id']}');
-            print('usuario email: ${data['email']}');
-            print('usuario produtos: ${data['produtos']}');
+            Usuario user = Usuario(id: data['id'], email: data['email'], senha: data['senha'], produtos: data['produtos']);
             if (data['senha'] == senha){
-              Navigator.push(context, MaterialPageRoute(builder: (context) => PageProdutos(idUser: data['id'],)));
+              Navigator.push(context, MaterialPageRoute(builder: (context) => PageProdutos(user: user)));
             }
             else{
               showModalBottomSheet(
@@ -81,6 +77,7 @@ class _LoginFormState extends State<LoginForm>{
   void goToCadastro(){
     Navigator.pushNamed(context, '/cadastro');
   }
+
   @override
   Widget build(BuildContext context) {
     return Padding(

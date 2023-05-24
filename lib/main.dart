@@ -1,4 +1,5 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:vtr_effects/colors/primaria.dart';
 import 'package:vtr_effects/pages/page_cadastro.dart';
@@ -7,11 +8,12 @@ import 'package:vtr_effects/pages/page_login.dart';
 import 'package:vtr_effects/pages/page_produtos.dart';
 import 'package:vtr_effects/pages/sobre_nos.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await FlutterDownloader.initialize();
   await Firebase.initializeApp();
-
   runApp(const MyApp());
 }
 
@@ -31,7 +33,6 @@ class MyApp extends StatelessWidget {
       home: const PageLogin(),
       routes: {
         '/home': (context) => const PageLogin(),
-        '/produtos': (context) => const PageProdutos(),
         '/faleconosco': (context) => const PageFaleConosto(),
         '/sobrenos': (context) => const PageSobreNos(),
         '/cadastrar': (context) => const PageCadastro(),

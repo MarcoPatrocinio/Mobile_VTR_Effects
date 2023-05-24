@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:vtr_effects/classes/produto.dart';
 import 'package:vtr_effects/classes/sobre_nos.dart';
+import 'package:vtr_effects/pages/page_veja_mais.dart';
 
 import '../classes/usuario.dart';
 
@@ -13,7 +15,18 @@ Future<List<Produto>>? getProdutos() async {
       for (var docSnapshot in querySnapshot.docs) {
         final data = docSnapshot.data();
         lista.add(
-          Produto(id: data['id'], nome: data['nome'], imagem: data['imagem'], descricao: data['descricao'], preco: 0.00)
+          Produto(
+              id: data['id'],
+              nome: data['nome'],
+              imagem: data['imagem'],
+              descricao: data['descricao'],
+              descricaoDetalhada: data['descricaoDetalhada'],
+              manual: data['manual'],
+              garantia: data['garantia'],
+              firmware: data['firmware'],
+              comentarios: data['comentario'],
+              preco: data['valor']
+          )
         );
         //print('${docSnapshot.id} => ${docSnapshot.data()}');
       }
@@ -44,30 +57,26 @@ Future<Usuario> getUsuario(int idUser) async {
 
 
 class ListaProdutos extends StatefulWidget{
-  final idUser;
+  final Usuario usuario;
 
-  const ListaProdutos(this.idUser, {super.key});
+  const ListaProdutos({super.key, required Usuario this.usuario});
 
   @override
-  _ListaProdutosState createState() => _ListaProdutosState(idUser);
+  _ListaProdutosState createState() => _ListaProdutosState(usuario);
 }
 class _ListaProdutosState extends State<ListaProdutos>{
-  List<Produto> listaProdutos = [];
-  final idUser;
+  final Usuario usuario;
   late Future<List<Produto>>? futureProdutos;
-  late Future<Usuario> usuario;
-  _ListaProdutosState(this.idUser);
+  late DocumentReference auxManual;
+  _ListaProdutosState(this.usuario);
 
   @override
   void initState() {
     super.initState();
-    print('IdUsuario: $idUser');
     futureProdutos = getProdutos();
-    usuario = getUsuario(idUser);
   }
 
   double hasProdutoOpacity(List<dynamic>? data, int? idProduto){
-    print('produtos: $data');
     if (data?.contains(idProduto) == true) {
       return 0.6;
     }
@@ -90,90 +99,95 @@ class _ListaProdutosState extends State<ListaProdutos>{
   Widget build(BuildContext context) {
     return Column(
       children: [
-        FutureBuilder<Usuario>(
-            future: usuario,
-            builder: (context, snapuser){
-              if(snapuser.hasData){
-                return Expanded(
-                    child: FutureBuilder<List<Produto>>(
-                      future: futureProdutos,
-                      builder: (context, snapshot) {
-                        if (snapshot.hasData){
-                          return ListView.builder(
-                            itemCount: snapshot.data?.length,
-                            itemBuilder: (context, index) {
-                              Produto? produto = snapshot.data?[index];
-                              return Padding(
-                                padding: const EdgeInsets.only(top: 15, left: 10, right: 10),
+        Expanded(
+            child: FutureBuilder<List<Produto>>(
+              future: futureProdutos,
+              builder: (context, snapshot) {
+                if (snapshot.hasData){
+                  return ListView.builder(
+                    itemCount: snapshot.data?.length,
+                    itemBuilder: (context, index) {
+                      Produto? produto = snapshot.data?[index];
+                      return Padding(
+                        padding: const EdgeInsets.only(top: 15, left: 10, right: 10),
+                        child: Flex(
+                          direction: Axis.horizontal,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Stack(
+                              alignment: Alignment.topCenter,
+                              children: [
+                                Opacity(
+                                  opacity: hasProdutoOpacity(usuario.produtos, snapshot.data?[index].id),
+                                  child: Image.network(
+                                    '${snapshot.data?[index].imagem}',
+                                    width: 125,
+                                    height: 200,
+                                    fit: BoxFit.fitWidth,
+                                  ),
+                                ),
+                                hasProdutoCorrect(usuario.produtos, snapshot.data?[index].id) ?? Container(),
+                              ],
+                            ),
+                            Container(
+                              width: 240,
+                              height: 150,
+                              child: Container(
                                 child: Flex(
-                                  direction: Axis.horizontal,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  direction: Axis.vertical,
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Stack(
-                                      alignment: Alignment.topCenter,
-                                      children: [
-                                        Opacity(
-                                            opacity: hasProdutoOpacity(snapuser.data?.produtos, snapshot.data?[index].id),
-                                          child: Image.network(
-                                            '${snapshot.data?[index].imagem}',
-                                            width: 125,
-                                            height: 200,
-                                            fit: BoxFit.fitWidth,
-                                          ),
-                                        ),
-                                        hasProdutoCorrect(snapuser.data?.produtos, snapshot.data?[index].id) ?? Container()
-                                      ],
-                                    ),
-                                    Container(
-                                      width: 240,
-                                      height: 150,
-                                      child: Container(
-                                        // conteúdo do componente
-                                        child: Flex(
-                                          direction: Axis.vertical,
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Text(
-                                              '${produto?.nome}',
-                                              style: const TextStyle(
-                                                  color: Color(0xFFFFFFFF),
-                                                  fontWeight: FontWeight.w600
-                                              ),
-                                            ),
-                                            Text(
-                                              'Conheça mais sobre o ${produto?.nome} '
-                                                  'que está impressionando o Brasil.',
-                                              textAlign: TextAlign.center,
-                                              style: const TextStyle(
-                                                color: Color(0xFFFFFFFF),
-                                              ),
-                                            ),
-                                            ElevatedButton(onPressed: () => debugPrint("Veja Mais"), child: Text("Veja Mais")),
-                                          ],
-                                        ),
+                                    Text(
+                                      '${produto?.nome}',
+                                      style: const TextStyle(
+                                          color: Color(0xFFFFFFFF),
+                                          fontWeight: FontWeight.w600
                                       ),
                                     ),
-                                    //Tentar colocar linha
+                                    Text(
+                                      '${produto?.descricao}',
+                                      textAlign: TextAlign.center,
+                                      style: const TextStyle(
+                                        color: Color(0xFFFFFFFF),
+                                      ),
+                                    ),
+                                    ElevatedButton(
+                                      onPressed: () =>  Navigator.push(context, MaterialPageRoute(builder: (context) => PageVejaMais(
+                                        user: usuario, produto: produto ?? Produto(
+                                              id: -1,
+                                              nome: "",
+                                              imagem: "",
+                                              descricao: "descricao",
+                                              descricaoDetalhada: "",
+                                              manual: "" as DocumentReference,
+                                              garantia: "" as DocumentReference,
+                                              firmware: "" as DocumentReference,
+                                              comentarios: [],
+                                              preco: "0.00"
+                                            ),
+                                          )
+                                        )
+                                      ),
+                                      child: const Text("Veja Mais")
+                                    ),
                                   ],
                                 ),
-                              );
-                            },
-                          );
-                        }
-                        else if (snapshot.hasError) {
-                          return Text('${snapshot.error}');
-                        }
-                        return const CircularProgressIndicator();
-                      },
-                    )
-                );
-              } else if (snapuser.hasError) {
-                return Text('${snapuser.error}');
-              }
-              return const CircularProgressIndicator();
-            }
+                              ),
+                            ),
+                            //Tentar colocar linha
+                          ],
+                        ),
+                      );
+                    },
+                  );
+                }
+                else if (snapshot.hasError) {
+                  return Text('${snapshot.error}');
+                }
+                return const CircularProgressIndicator();
+              },
+            ),
         ),
-
         PreferredSize(
           preferredSize: const Size.fromHeight(10.0), // altura da borda
           child: Container(

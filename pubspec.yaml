@@ -40,6 +40,13 @@ dependencies:
   provider:
   firebase_core: ^2.13.0
   cloud_firestore: ^4.7.1
+  firebase_storage:
+  flutter_downloader:
+  path_provider:
+  dio:
+  open_file: ^3.3.1
+  file_picker:
+  flutter_file_downloader:
 
 dev_dependencies:
   flutter_test:

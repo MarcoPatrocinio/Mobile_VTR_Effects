@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:vtr_effects/components/lista_produtos.dart';
 
+import '../classes/usuario.dart';
+
 class PageProdutos extends StatelessWidget{
-  final idUser;
-  const PageProdutos({this.idUser});
+  final Usuario user;
+  const PageProdutos({required Usuario this.user});
 
 
   @override
@@ -13,11 +15,11 @@ class PageProdutos extends StatelessWidget{
         automaticallyImplyLeading: false,
         elevation: 0,
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(10.0), // altura da borda
+          preferredSize: const Size.fromHeight(10.0),
           child: Container(
             decoration: const BoxDecoration(
               border: Border(
-                bottom: BorderSide(width: 1.0, color: Color(0xFFBDB133)), // estilo e cor da borda
+                bottom: BorderSide(width: 1.0, color: Color(0xFFBDB133)),
               ),
             ),
           ),
@@ -41,13 +43,14 @@ class PageProdutos extends StatelessWidget{
                 fontSize: 32,
                 fontWeight: FontWeight.w500,
                 color: Color(0xFFBDB133)
-              ),),
+                ),
+              ),
             ),
           ],
         ),
         backgroundColor: const Color(0xFF04121F),
       ),
-      body: ListaProdutos(idUser),
+      body: ListaProdutos(usuario: user),
       );
   }
 }
