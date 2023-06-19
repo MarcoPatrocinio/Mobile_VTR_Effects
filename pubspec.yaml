@@ -2,7 +2,7 @@ name: vtr_effects
 description: UCL VTR-EFFECTS
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: "none" # Remove this line if you wish to publish to pub.dev
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
@@ -19,7 +19,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: '>=2.19.2 <3.0.0'
+  sdk: ">=2.19.2 <3.0.0"
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -47,6 +47,22 @@ dependencies:
   open_file: ^3.3.1
   file_picker:
   flutter_file_downloader:
+  flutter_native_splash: ^2.2.0+1
+  flutter_launcher_icons: ^0.13.1
+
+flutter_native_splash:
+  color: "#111111"
+  image: "lib/assets/splashvtr.png"
+  android: true
+  ios: true
+
+flutter_icons:
+  image_path: "lib/assets/iconevtr.png"
+  ios: true
+  remove_alpha_ios: true
+  android: "launcher_icon"
+  adaptive_icon_background: "#FFFFFF"
+  adaptive_icon_foreground: "lib/assets/iconevtr.png"
 
 dev_dependencies:
   flutter_test:
@@ -64,17 +80,18 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
-
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
   assets:
-      - lib/assets/VTREffectsLogo.png
-      - lib/assets/kailanireverb.png
-      - lib/assets/narcisodelay.png
-      - lib/assets/Local.png
-      - lib/assets/overlay_comprado.png
+    - lib/assets/VTREffectsLogo.png
+    - lib/assets/kailanireverb.png
+    - lib/assets/narcisodelay.png
+    - lib/assets/Local.png
+    - lib/assets/overlay_comprado.png
+    - lib/assets/iconevtr.png
+    - lib/assets/splashvtr.png
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg
