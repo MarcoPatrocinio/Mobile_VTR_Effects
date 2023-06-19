@@ -6,7 +6,7 @@ import '../components/cabecalho_paginas.dart';
 
 class PageProdutos extends StatelessWidget{
   final Usuario user;
-  const PageProdutos({required Usuario this.user});
+  const PageProdutos({super.key, required this.user});
 
 
   @override
@@ -25,7 +25,7 @@ class PageProdutos extends StatelessWidget{
             ),
           ),
         ),
-        title: const CabecalhoPaginas(nomePagina: "Produtos"),
+        title: CabecalhoPaginas(nomePagina: "Produtos", user: user,),
         backgroundColor: const Color(0xFF04121F),
       ),
       body: ListaProdutos(usuario: user),

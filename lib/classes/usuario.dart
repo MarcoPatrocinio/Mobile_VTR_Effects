@@ -1,17 +1,20 @@
-import 'dart:ffi';
-
-import 'package:vtr_effects/classes/produto.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Usuario {
   final int id;
   final String email;
   final String senha;
-  final List<dynamic> produtos;
+  late List<dynamic> produtos;
+  final DocumentReference imagem;
+  late bool editando;
+  late List<dynamic> notificacoes;
 
-  const Usuario({
+  Usuario({
     required this.id,
     required this.email,
     required this.senha,
     required this.produtos,
+    required this.imagem,
+    required this.editando
   });
 }

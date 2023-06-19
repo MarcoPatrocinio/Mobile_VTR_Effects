@@ -1,11 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:vtr_effects/classes/produto.dart';
-import 'package:vtr_effects/classes/sobre_nos.dart';
+import 'package:vtr_effects/pages/page_fale_conosco.dart';
 import 'package:vtr_effects/pages/page_veja_mais.dart';
+import 'package:vtr_effects/pages/sobre_nos.dart';
 
 import '../classes/usuario.dart';
+import '../colors/primaria.dart';
 
 
 Future<List<Produto>>? getProdutos() async {
@@ -31,7 +34,7 @@ Future<List<Produto>>? getProdutos() async {
         //print('${docSnapshot.id} => ${docSnapshot.data()}');
       }
     },
-    onError: (e) => print("Error completing: $e"),
+    onError: (e) => debugPrint("Error completing: $e"),
   );
   return lista;
 }
@@ -45,21 +48,24 @@ Future<Usuario> getUsuario(int idUser) async {
           id: data['id'],
           email: data['email'],
           senha: data['senha'],
-          produtos: data['produtos']
+          produtos: data['produtos'],
+          imagem: data['imagem'],
+          editando: false
       );
     }
-    return const Usuario(id: -1, email: "email", senha: "senha", produtos: <dynamic>[]);
+    return Usuario(id: -1, email: "email", senha: "senha", produtos: <dynamic>[], imagem: FirebaseFirestore.instance.doc("gs:/vtr-effects.appspot.com/Usuarios/proffile.webp"), editando: false);
   },
-    onError: (e) => print("Error completing: $e"),
+    onError: (e) => debugPrint("Error completing: $e"),
   );
   return usuario;
 }
 
 
+
 class ListaProdutos extends StatefulWidget{
   final Usuario usuario;
 
-  const ListaProdutos({super.key, required Usuario this.usuario});
+  const ListaProdutos({super.key, required this.usuario});
 
   @override
   _ListaProdutosState createState() => _ListaProdutosState(usuario);
@@ -95,6 +101,289 @@ class _ListaProdutosState extends State<ListaProdutos>{
     return null;
   }
 
+  Widget verFoto(produto){
+    final storageRef = FirebaseStorage.instance.refFromURL(produto.imagem.path.replaceAll('gs:/', 'gs://'));
+    final imgUrl =  storageRef.getDownloadURL();
+    return FutureBuilder(
+      future: imgUrl,
+      builder: (context, snapshot) {
+        if(snapshot.hasData && snapshot.data != null){
+          return Image.network(snapshot.data ?? '');
+        }
+        return const CircularProgressIndicator();
+      },
+    );
+  }
+
+  void transferir(context, usuario, senha, email, produto) async {
+    var db = FirebaseFirestore.instance;
+    if(senha == usuario.senha){
+      db.collection('usuarios').where('email', isEqualTo: email).limit(1).get().then((querySnapshot) async {
+        if(querySnapshot.size > 0){
+          var idDoc = querySnapshot.docs[0].id;
+          var data = querySnapshot.docs[0].data();
+          var produtosAtt = data['produtos'];
+          if(produtosAtt.contains(produto.id)){
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  backgroundColor: const Color(0xFF04121F),
+                  title: const Text('Falha ao transferir',
+                    style: TextStyle(
+                        color: Color(0xFFBDB133),
+                        fontWeight: FontWeight.bold
+                    ),
+                  ),
+                  content: const Text('Usuario ja possui este produto',
+                    style: TextStyle(
+                        color: Color(0xFFBDB133),
+                        fontWeight: FontWeight.w500
+                    ),
+                  ),
+                  actions: [
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: const Text('Ok'),
+                    ),
+                  ],
+                );
+              },
+            );
+          }
+          else{
+            produtosAtt.add(produto.id);
+            //
+            db.collection('usuarios').doc(idDoc).update({'produtos': produtosAtt});
+            db.collection('usuarios').where('email', isEqualTo: usuario.email).limit(1).get().then((snap) {
+              var selfIdDoc = snap.docs[0].id;
+              var selfData = snap.docs[0].data();
+              var selfProdutosAtt = selfData['produtos'];
+              selfProdutosAtt.remove(produto.id);
+              db.collection('usuarios').doc(selfIdDoc).update({'produtos': selfProdutosAtt});
+              usuario.produtos = selfProdutosAtt;
+              setState((){});
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    backgroundColor: const Color(0xFF04121F),
+                    title: const Text('Sucesso ao tranferir',
+                      style: TextStyle(
+                          color: Color(0xFFBDB133),
+                          fontWeight: FontWeight.bold
+                      ),
+                    ),
+                    content: const Text('Produto foi transferido com sucesso',
+                      style: TextStyle(
+                          color: Color(0xFFBDB133),
+                          fontWeight: FontWeight.w500
+                      ),
+                    ),
+                    actions: [
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all(const MaterialColor(0xFFBDB133, mapPrimaryColor)),
+                          foregroundColor: MaterialStateProperty.all(Colors.black),
+                          textStyle: MaterialStateProperty.all(const TextStyle()),
+                        ),
+                        child: const Text('Ok'),
+                      ),
+                    ],
+                  );
+                },
+              );
+            });
+            Navigator.pop(context);
+          }
+          //
+        }
+        else{
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                backgroundColor: const Color(0xFF04121F),
+                title: const Text('Falha ao transferir',
+                  style: TextStyle(
+                      color: Color(0xFFBDB133),
+                      fontWeight: FontWeight.bold
+                  ),
+                ),
+                content: const Text('Email não cadastrado',
+                  style: TextStyle(
+                      color: Color(0xFFBDB133),
+                      fontWeight: FontWeight.w500
+                  ),
+                ),
+                actions: [
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all(const MaterialColor(0xFFBDB133, mapPrimaryColor)),
+                      foregroundColor: MaterialStateProperty.all(Colors.black),
+                      textStyle: MaterialStateProperty.all(const TextStyle()),
+                    ),
+                    child: const Text('Ok'),
+                  ),
+                ],
+              );
+            },
+          );
+        }
+      });
+    }
+    else{
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            backgroundColor: const Color(0xFF04121F),
+            title: const Text('Falha ao transferir',
+              style: TextStyle(
+                  color: Color(0xFFBDB133),
+                  fontWeight: FontWeight.bold
+              ),
+            ),
+            content: const Text('Senha Incorreta',
+              style: TextStyle(
+                  color: Color(0xFFBDB133),
+                  fontWeight: FontWeight.w500
+              ),
+            ),
+            actions: [
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all(const MaterialColor(0xFFBDB133, mapPrimaryColor)),
+                  foregroundColor: MaterialStateProperty.all(Colors.black),
+                  textStyle: MaterialStateProperty.all(const TextStyle()),
+                ),
+                child: const Text('Ok'),
+              ),
+            ],
+          );
+        },
+      );
+    }
+
+  }
+
+  Widget renderTransferencia(context, usuario, produto){
+    String email = "";
+    String senha = "";
+    if(usuario.produtos.contains(produto.id)){
+      return ElevatedButton(
+          onPressed:  () async {
+            final screenHeight = MediaQuery.of(context).size.height;
+            showModalBottomSheet(
+                context: context,
+                isScrollControlled: true,
+                backgroundColor: Colors.transparent,
+                builder: (BuildContext context) {
+                  return DraggableScrollableSheet(
+                      initialChildSize: 0.7,
+                      builder: (_, controller) {
+                        return Container(
+                          color: const Color(0xff04121f),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Padding(
+                                padding: EdgeInsets.only(top: 10, bottom: 5, right: 10, left: 10),
+                                child: Text("Email do usuario", style: TextStyle(color: Colors.white, fontSize: 20),),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(10),
+                                child: TextFormField(
+                                  decoration: const InputDecoration(
+                                      labelText: '',
+                                      labelStyle: TextStyle(
+                                          color: Color(0xFF000000)
+                                      ),
+                                      filled: true,
+                                      fillColor: Color(0xFFBDB133)
+                                  ),
+                                  textInputAction: TextInputAction.next,
+                                  onChanged: (e) => email = e,
+                                  autofocus: true,
+                                ),
+                              ),
+                              const Padding(
+                                padding: EdgeInsets.only(top: 10, bottom: 5, right: 10, left: 10),
+                                child: Text("Senha", style: TextStyle(color: Colors.white, fontSize: 20),),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(10),
+                                child: TextFormField(
+                                  decoration: const InputDecoration(
+                                      labelText: '',
+                                      labelStyle: TextStyle(
+                                          color: Color(0xFF000000)
+                                      ),
+                                      filled: true,
+                                      fillColor: Color(0xFFBDB133)
+                                  ),
+                                  obscureText: true,
+                                  textInputAction: TextInputAction.done,
+                                  onChanged: (e) => senha = e,
+                                  onFieldSubmitted: (e) => transferir(context, usuario, senha, email, produto),
+                                  autofocus: true,
+                                ),
+                              ),
+                              Flex(
+                                direction: Axis.horizontal,
+                                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                children: [
+                                  ElevatedButton(
+                                    style: ButtonStyle(
+                                      backgroundColor: MaterialStateProperty.all(const MaterialColor(0xFFBDB133, mapPrimaryColor)),
+                                      foregroundColor: MaterialStateProperty.all(Colors.black),
+                                      textStyle: MaterialStateProperty.all(const TextStyle()),
+                                    ),
+                                    onPressed: () => Navigator.pop(context),
+                                    child: const Text('Cancelar'),
+                                  ),
+                                  ElevatedButton(
+                                    style: ButtonStyle(
+                                      backgroundColor: MaterialStateProperty.all(const MaterialColor(0xFFBDB133, mapPrimaryColor)),
+                                      foregroundColor: MaterialStateProperty.all(Colors.black),
+                                      textStyle: MaterialStateProperty.all(const TextStyle()),
+                                    ),
+                                    child: const Text('Confirmar'),
+                                    onPressed: () => transferir(context, usuario, senha, email, produto),
+                                  )
+                                ],
+                              )
+                            ],
+                          ),
+                        );
+                      }
+                  );
+                }
+            );
+          },
+          style: ButtonStyle(
+            backgroundColor: MaterialStateProperty.all(const MaterialColor(0xFFBDB133, mapPrimaryColor)),
+            foregroundColor: MaterialStateProperty.all(Colors.black),
+            textStyle: MaterialStateProperty.all(const TextStyle()),
+          ),
+          child: const Text("Transferir")
+      );
+    }
+    return const Text("");
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -119,59 +408,70 @@ class _ListaProdutosState extends State<ListaProdutos>{
                               children: [
                                 Opacity(
                                   opacity: hasProdutoOpacity(usuario.produtos, snapshot.data?[index].id),
-                                  child: Image.network(
-                                    '${snapshot.data?[index].imagem}',
-                                    width: 125,
-                                    height: 200,
-                                    fit: BoxFit.fitWidth,
-                                  ),
+                                  child: verFoto(produto)
                                 ),
                                 hasProdutoCorrect(usuario.produtos, snapshot.data?[index].id) ?? Container(),
                               ],
                             ),
-                            Container(
+                            SizedBox(
                               width: 240,
                               height: 150,
-                              child: Container(
-                                child: Flex(
-                                  direction: Axis.vertical,
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      '${produto?.nome}',
-                                      style: const TextStyle(
-                                          color: Color(0xFFFFFFFF),
-                                          fontWeight: FontWeight.w600
-                                      ),
-                                    ),
-                                    Text(
-                                      '${produto?.descricao}',
-                                      textAlign: TextAlign.center,
-                                      style: const TextStyle(
+                              child: Flex(
+                                direction: Axis.vertical,
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    '${produto?.nome}',
+                                    style: const TextStyle(
                                         color: Color(0xFFFFFFFF),
-                                      ),
+                                        fontWeight: FontWeight.w600
                                     ),
-                                    ElevatedButton(
-                                      onPressed: () =>  Navigator.push(context, MaterialPageRoute(builder: (context) => PageVejaMais(
-                                        user: usuario, produto: produto ?? Produto(
-                                              id: -1,
-                                              nome: "",
-                                              imagem: "",
-                                              descricao: "descricao",
-                                              descricaoDetalhada: "",
-                                              manual: "" as DocumentReference,
-                                              garantia: "" as DocumentReference,
-                                              firmware: "" as DocumentReference,
-                                              comentarios: [],
-                                              preco: "0.00"
+                                  ),
+                                  Text(
+                                    '${produto?.descricao}',
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(
+                                      color: Color(0xFFFFFFFF),
+                                    ),
+                                  ),
+                                  Flex(
+                                    direction: Axis.horizontal,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Padding(
+                                          padding: const EdgeInsets.all(5),
+                                        child: ElevatedButton(
+                                            onPressed: () =>  Navigator.push(context, MaterialPageRoute(builder: (context) => PageVejaMais(
+                                              user: usuario,
+                                              produto: produto ?? Produto(
+                                                  id: -1,
+                                                  nome: "",
+                                                  imagem: "" as DocumentReference,
+                                                  descricao: "descricao",
+                                                  descricaoDetalhada: "",
+                                                  manual: "" as DocumentReference,
+                                                  garantia: "" as DocumentReference,
+                                                  firmware: "" as DocumentReference,
+                                                  comentarios: [],
+                                                  preco: "0.00"
+                                              ),
+                                            )
+                                            )
                                             ),
-                                          )
-                                        )
+                                            style: ButtonStyle(
+                                              backgroundColor: MaterialStateProperty.all(const MaterialColor(0xFFBDB133, mapPrimaryColor)),
+                                              foregroundColor: MaterialStateProperty.all(Colors.black),
+                                              textStyle: MaterialStateProperty.all(const TextStyle()),
+                                            ),
+                                            child: const Text("Veja Mais")
+                                        ),
                                       ),
-                                      child: const Text("Veja Mais")
-                                    ),
-                                  ],
-                                ),
+                                      Padding(
+                                        padding: const EdgeInsets.all(5),
+                                        child: renderTransferencia(context, usuario, produto),
+                                      )],
+                                  ),
+                                ],
                               ),
                             ),
                             //Tentar colocar linha
@@ -207,7 +507,7 @@ class _ListaProdutosState extends State<ListaProdutos>{
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   InkWell(
-                    onTap: () => Navigator.pushNamed(context, '/faleconosco'),
+                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => PageFaleConosto(user: usuario))),
                     child: const Text(
                       "Fale Conosco",
                       style: TextStyle(
@@ -219,7 +519,7 @@ class _ListaProdutosState extends State<ListaProdutos>{
                     ),
                   ),
                   InkWell(
-                    onTap: () => Navigator.pushNamed(context, '/sobrenos'),
+                    onTap: () =>  Navigator.push(context, MaterialPageRoute(builder: (context) => PageSobreNos(user: usuario))),
                     child: const Text(
                       "Sobre nós",
                       style: TextStyle(

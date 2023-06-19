@@ -1,19 +1,18 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 
 class Produto {
   final int id;
   final String nome;
-  final String imagem;
+  final DocumentReference imagem;
   final String descricao;
   final String descricaoDetalhada;
   final DocumentReference manual;
   final DocumentReference garantia;
   final DocumentReference firmware;
-  final List<dynamic> comentarios;
+  late List<dynamic> comentarios;
   final String preco;
 
-  const Produto({
+  Produto({
     required this.id,
     required this.nome,
     required this.imagem,

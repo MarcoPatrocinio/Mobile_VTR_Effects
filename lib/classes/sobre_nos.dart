@@ -6,7 +6,7 @@ class SobreNos {
   final String endereco;
   final String telefone;
   final String historia;
-  final RedesSociais redes_sociais;
+  final RedesSociais redesSociais;
 
   const SobreNos({
     required this.id,
@@ -14,6 +14,6 @@ class SobreNos {
     required this.endereco,
     required this.telefone,
     required this.historia,
-    required this.redes_sociais
+    required this.redesSociais
   });
 }

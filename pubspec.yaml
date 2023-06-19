@@ -103,6 +103,7 @@ flutter:
   # the material Icons class.
   uses-material-design: true
   assets:
+<<<<<<< Updated upstream
     - lib/assets/VTREffectsLogo.png
     - lib/assets/kailanireverb.png
     - lib/assets/narcisodelay.png
@@ -110,6 +111,14 @@ flutter:
     - lib/assets/overlay_comprado.png
     - assets/iconevtr.png
     - assets/splashvtr.png
+=======
+      - lib/assets/VTREffectsLogo.png
+      - lib/assets/kailanireverb.png
+      - lib/assets/narcisodelay.png
+      - lib/assets/Local.png
+      - lib/assets/overlay_comprado.png
+      - lib/assets/proffile.webp
+>>>>>>> Stashed changes
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg

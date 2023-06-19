@@ -1,13 +1,8 @@
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:vtr_effects/colors/primaria.dart';
 import 'package:vtr_effects/pages/page_cadastro.dart';
-import 'package:vtr_effects/pages/page_fale_conosco.dart';
 import 'package:vtr_effects/pages/page_login.dart';
-import 'package:vtr_effects/pages/page_produtos.dart';
-import 'package:vtr_effects/pages/sobre_nos.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 
 Future<void> main() async {
@@ -27,14 +22,12 @@ class MyApp extends StatelessWidget {
       title: 'Mobile VTR-Effects',
       theme: ThemeData(
         scaffoldBackgroundColor: const Color(0xFF04121F),
-        primarySwatch: const MaterialColor(0xFFBDB133, primaria),
+        primarySwatch: const MaterialColor(0x00000000, primaria),
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: const PageLogin(),
       routes: {
         '/home': (context) => const PageLogin(),
-        '/faleconosco': (context) => const PageFaleConosto(),
-        '/sobrenos': (context) => const PageSobreNos(),
         '/cadastrar': (context) => const PageCadastro(),
       },
       debugShowCheckedModeBanner: false,

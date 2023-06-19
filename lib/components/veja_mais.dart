@@ -1,23 +1,20 @@
 import 'dart:io';
-
-import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_file_downloader/flutter_file_downloader.dart';
 import 'package:open_file/open_file.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:path_provider/path_provider.dart';
 
 import '../classes/produto.dart';
 import '../classes/usuario.dart';
+import '../colors/primaria.dart';
 
 
 class VejaMais extends StatefulWidget{
   final Usuario usuario;
   final Produto produto;
-  const VejaMais({super.key, required Usuario this.usuario, required Produto this.produto});
+  const VejaMais({super.key, required this.usuario, required this.produto});
 
   @override
   _VejaMaisState createState() => _VejaMaisState(usuario, produto);
@@ -38,7 +35,6 @@ class _VejaMaisState extends State<VejaMais>{
       }
       return ElevatedButton(
         onPressed:  () async {
-          print(produto.manual.path);
           final storageRef = FirebaseStorage.instance.refFromURL(produto.manual.path.replaceAll('gs:/', 'gs://'));
           final downloadUrl = await storageRef.getDownloadURL();
           FileDownloader.downloadFile(
@@ -62,6 +58,11 @@ class _VejaMaisState extends State<VejaMais>{
               }
           );
         },
+        style: ButtonStyle(
+          backgroundColor: MaterialStateProperty.all(const MaterialColor(0xFFBDB133, mapPrimaryColor)),
+          foregroundColor: MaterialStateProperty.all(Colors.black),
+          textStyle: MaterialStateProperty.all(const TextStyle()),
+        ),
         child: const Text("Baixar Manual do Produto"),
       );
     }
@@ -75,7 +76,6 @@ class _VejaMaisState extends State<VejaMais>{
       }
       return ElevatedButton(
         onPressed:  () async {
-          print(produto.manual.path);
           final storageRef = FirebaseStorage.instance.refFromURL(produto.firmware.path.replaceAll('gs:/', 'gs://'));
           final downloadUrl = await storageRef.getDownloadURL();
           FileDownloader.downloadFile(
@@ -110,6 +110,11 @@ class _VejaMaisState extends State<VejaMais>{
               }
           );
         },
+        style: ButtonStyle(
+          backgroundColor: MaterialStateProperty.all(const MaterialColor(0xFFBDB133, mapPrimaryColor)),
+          foregroundColor: MaterialStateProperty.all(Colors.black),
+          textStyle: MaterialStateProperty.all(const TextStyle()),
+        ),
         child: const Text("Baixar Firmware Atualizado"),
       );
     }
@@ -123,7 +128,6 @@ class _VejaMaisState extends State<VejaMais>{
       }
       return ElevatedButton(
         onPressed:  () async {
-          print(produto.manual.path);
           final storageRef = FirebaseStorage.instance.refFromURL(produto.garantia.path.replaceAll('gs:/', 'gs://'));
           final downloadUrl = await storageRef.getDownloadURL();
           FileDownloader.downloadFile(
@@ -146,17 +150,42 @@ class _VejaMaisState extends State<VejaMais>{
               }
           );
         },
+        style: ButtonStyle(
+          backgroundColor: MaterialStateProperty.all(const MaterialColor(0xFFBDB133, mapPrimaryColor)),
+          foregroundColor: MaterialStateProperty.all(Colors.black),
+          textStyle: MaterialStateProperty.all(const TextStyle()),
+        ),
         child: const Text("Baixar Termo de Garantia"),
       );
     }
     return Container();
   }
 
+  void addComentario()  {
+    final db = FirebaseFirestore.instance;
+    db.collection('produtos').where('id', isEqualTo: produto.id).get().then((snap) async{
+      for(var prodDoc in snap.docs){
+        final prodData = prodDoc.data();
+        var aux = prodData['comentario'];
+        aux.add({
+          'com': novoComentario,
+          'email': usuario.email,
+          'idCom': produto.comentarios.length + 1,
+          'idUser': usuario.id,
+          'imagemUser': usuario.imagem
+        });
+        await db.collection('produtos').doc(prodDoc.id).update({'comentario': aux});
+        produto.comentarios = aux;
+        setState(() {});
+      }
+    });
+    Navigator.pop(context);
+  }
+
   Widget verAddComentario(){
     if(usuario.produtos.contains(produto.id)){
       return ElevatedButton(
         onPressed:  () async {
-          print('Comentario');
           showModalBottomSheet(
               context: context,
               backgroundColor: const Color(0xFF04121F),
@@ -178,8 +207,9 @@ class _VejaMaisState extends State<VejaMais>{
                               filled: true,
                               fillColor: Color(0xFFBDB133)
                           ),
-                          textInputAction: TextInputAction.next,
+                          textInputAction: TextInputAction.done,
                           onChanged: (coment) => novoComentario = coment,
+                          onFieldSubmitted: (e) => addComentario(),
                           autofocus: true,
                         ),
                       ),
@@ -188,12 +218,22 @@ class _VejaMaisState extends State<VejaMais>{
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
                           ElevatedButton(
-                            child: const Text('Cancelar'),
+                            style: ButtonStyle(
+                              backgroundColor: MaterialStateProperty.all(const MaterialColor(0xFFBDB133, mapPrimaryColor)),
+                              foregroundColor: MaterialStateProperty.all(Colors.black),
+                              textStyle: MaterialStateProperty.all(const TextStyle()),
+                            ),
                             onPressed: () => Navigator.pop(context),
+                            child: const Text('Cancelar'),
                           ),
                           ElevatedButton(
+                            style: ButtonStyle(
+                              backgroundColor: MaterialStateProperty.all(const MaterialColor(0xFFBDB133, mapPrimaryColor)),
+                              foregroundColor: MaterialStateProperty.all(Colors.black),
+                              textStyle: MaterialStateProperty.all(const TextStyle()),
+                            ),
+                            onPressed: () => addComentario(),
                             child: const Text('Adicionar'),
-                            onPressed: () => Navigator.pop(context),
                           )
                         ],
                       )
@@ -203,10 +243,29 @@ class _VejaMaisState extends State<VejaMais>{
               }
           );
         },
+        style: ButtonStyle(
+          backgroundColor: MaterialStateProperty.all(const MaterialColor(0xFFBDB133, mapPrimaryColor)),
+          foregroundColor: MaterialStateProperty.all(Colors.black),
+          textStyle: MaterialStateProperty.all(const TextStyle()),
+        ),
         child: const Text("Adicionar Comentario"),
       );
     }
     return Container();
+  }
+
+  Widget verFoto(){
+    final storageRef = FirebaseStorage.instance.refFromURL(produto.imagem.path.replaceAll('gs:/', 'gs://'));
+    final imgUrl =  storageRef.getDownloadURL();
+    return FutureBuilder(
+      future: imgUrl,
+      builder: (context, snapshot) {
+        if(snapshot.hasData && snapshot.data != null){
+          return Image.network(snapshot.data ?? '');
+        }
+        return const CircularProgressIndicator();
+      },
+    );
   }
 
   @override
@@ -215,7 +274,7 @@ class _VejaMaisState extends State<VejaMais>{
       ListView(
         padding: const EdgeInsets.all(20),
         children: [
-          Image.network(produto.imagem, width: 200,),
+         verFoto(),
           Padding(
             padding: const EdgeInsets.only(top: 10, bottom: 10),
             child:  Text(
@@ -232,6 +291,7 @@ class _VejaMaisState extends State<VejaMais>{
               padding: const EdgeInsets.only(top: 5, bottom: 5),
               child: Text(
               produto.descricaoDetalhada,
+              textAlign: TextAlign.justify,
               style: const TextStyle(
                 fontSize: 20,
                 color: Colors.white,
@@ -239,7 +299,7 @@ class _VejaMaisState extends State<VejaMais>{
             )
           ),
           Padding(
-              padding: const EdgeInsets.only(top: 5, bottom: 5),
+            padding: const EdgeInsets.only(top: 5, bottom: 5),
             child: Text(
               produto.preco,
               textAlign: TextAlign.center,
@@ -295,32 +355,40 @@ class _VejaMaisState extends State<VejaMais>{
             itemCount: produto.comentarios.length,
             itemBuilder: (context, index) {
               final comentario = produto.comentarios[index];
+              final storageRef = FirebaseStorage.instance.refFromURL(comentario['imagemUser'].path.replaceAll('gs:/', 'gs://'));
+              final imgUrl = storageRef.getDownloadURL();
               return Flex(
                 direction: Axis.vertical,
                 children: [
                   ListTile(
                     leading: GestureDetector(
-                      onTap: () async {
-                        // Display the image in large form.
-                        print("Comment Clicked");
-                      },
                       child: Container(
-                        height: 50.0,
-                        width: 50.0,
-                        decoration: BoxDecoration(
-                            color: Colors.blue,
-                            borderRadius: new BorderRadius.all(Radius.circular(50))),
-                        child: CircleAvatar(
-                            radius: 50,
-                            backgroundImage: NetworkImage(produto.imagem)),
+                          height: 50.0,
+                          width: 50.0,
+                          decoration: const BoxDecoration(
+                              color: Color(0xB133FF),
+                              borderRadius: BorderRadius.all(Radius.circular(50))
+                          ),
+                          child: FutureBuilder(
+                            future: imgUrl,
+                            builder: (context, snapshot) {
+                              if(snapshot.hasData && snapshot.data != null){
+                                return CircleAvatar(
+                                    radius: 50,
+                                    backgroundImage: NetworkImage(snapshot.data ?? '')
+                                );
+                              }
+                              return const CircularProgressIndicator();
+                            },
+                          )
                       ),
                     ),
                     title: Text(
-                      usuario.email,
+                      comentario['email'],
                       style: const TextStyle(
-                        color: Color(0xFFBDB133),
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18
+                          color: Color(0xFFBDB133),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18
                       ),
                     ),
                     subtitle: Text(

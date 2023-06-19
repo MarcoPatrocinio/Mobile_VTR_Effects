@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:vtr_effects/components/veja_mais.dart';
+import 'package:vtr_effects/components/edicao_pefil.dart';
 
-import '../classes/produto.dart';
 import '../classes/usuario.dart';
 import '../components/cabecalho_paginas.dart';
 
-class PageVejaMais extends StatelessWidget{
+class PagePerfil extends StatelessWidget{
   final Usuario user;
-  final Produto produto;
-  const PageVejaMais({super.key, required this.user, required this.produto});
+  const PagePerfil({super.key, required this.user});
 
 
   @override
@@ -27,10 +25,10 @@ class PageVejaMais extends StatelessWidget{
             ),
           ),
         ),
-        title: CabecalhoPaginas(nomePagina: "Detalhe", user: user),
+        title: CabecalhoPaginas(nomePagina: "Perfil", user: user),
         backgroundColor: const Color(0xFF04121F),
       ),
-      body: VejaMais(usuario: user, produto: produto,),
+      body: EdicaoPerfil(user),
     );
   }
 }

@@ -1,12 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_map/flutter_map.dart';
-import 'package:latlong2/latlong.dart';
 import 'package:vtr_effects/classes/equipe.dart';
 import 'package:vtr_effects/classes/redes_sociais.dart';
 import 'package:vtr_effects/classes/sobre_nos.dart';
+import 'package:vtr_effects/classes/usuario.dart';
 
-import '../classes/sobre_nos.dart';
 import '../components/cabecalho_paginas.dart';
 
 Future<List<Equipe>>? getEquipe() async {
@@ -21,14 +19,15 @@ Future<List<Equipe>>? getEquipe() async {
       //print('${docSnapshot.id} => ${docSnapshot.data()}');
     }
   },
-    onError: (e) => print("Error completing: $e"),
+    onError: (e) => {
+      //
+    }
   );
   return lista;
 }
 
 Future<SobreNos> getInfos() async {
   final db = FirebaseFirestore.instance;
-  int error = 0;
   SobreNos info = await db.collection('sobre_nos').get().then((querySnapshot) {
     for (var docSnapshot in querySnapshot.docs) {
       final data = docSnapshot.data();
@@ -38,7 +37,7 @@ Future<SobreNos> getInfos() async {
           endereco: data['endereco'],
           telefone: data['telefone'],
           historia: data['historia'],
-          redes_sociais: RedesSociais(
+          redesSociais: RedesSociais(
             facebook: data['redes_sociais']['facebook'],
             instagram: data['redes_sociais']['instagram'],
             linkedin: data['redes_sociais']['linkedin'],
@@ -50,7 +49,7 @@ Future<SobreNos> getInfos() async {
       //print('${docSnapshot.id} => ${docSnapshot.data()}');
     }
     return const SobreNos(id: 0, email: "", endereco: "endereco", telefone: "telefone", historia: "historia",
-        redes_sociais: RedesSociais(
+        redesSociais: RedesSociais(
             facebook: "facebook",
             instagram: "instagram",
             linkedin: "linkedin",
@@ -65,16 +64,19 @@ Future<SobreNos> getInfos() async {
 }
 
 class PageSobreNos extends StatefulWidget {
-  const PageSobreNos({Key? key}) : super(key: key);
+  final Usuario user;
+  const PageSobreNos({super.key, required this.user});
 
   @override
-  _PageSobreNosState createState() => _PageSobreNosState();
+  State<PageSobreNos> createState() {
+    return _PageSobreNosState();
+  }
 }
 
 class _PageSobreNosState extends State<PageSobreNos> {
-
   late Future<List<Equipe>>? futureEquipe;
   late Future<SobreNos> infos;
+
 
   @override
   void initState() {
@@ -101,7 +103,7 @@ class _PageSobreNosState extends State<PageSobreNos> {
               ),
             ),
           ),
-          title: const CabecalhoPaginas(nomePagina: "Sobre Nos"),
+          title: CabecalhoPaginas(nomePagina: "Sobre Nos", user: widget.user,),
           backgroundColor: const Color(0xFF04121F),
         ),
         body: SingleChildScrollView(
@@ -141,7 +143,7 @@ class _PageSobreNosState extends State<PageSobreNos> {
                     } else if(snapshot.hasError){
                       return Text("${snapshot.error}",
                         textAlign: TextAlign.justify,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 16,
                           color: Colors.white,
                         ),

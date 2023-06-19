@@ -1,10 +1,8 @@
-import 'dart:convert';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:vtr_effects/classes/usuario.dart';
 import 'package:vtr_effects/pages/page_produtos.dart';
+import 'package:vtr_effects/colors/primaria.dart';
 
 class LoginForm extends StatefulWidget{
   const LoginForm({Key? key}) : super(key: key);
@@ -23,7 +21,14 @@ class _LoginFormState extends State<LoginForm>{
         if(querySnapshot.size > 0){
           for (var docSnapshot in querySnapshot.docs) {
             final data = docSnapshot.data();
-            Usuario user = Usuario(id: data['id'], email: data['email'], senha: data['senha'], produtos: data['produtos']);
+            Usuario user = Usuario(
+                id: data['id'],
+                email: data['email'],
+                senha: data['senha'],
+                produtos: data['produtos'],
+                imagem: data['imagem'],
+                editando: false
+            );
             if (data['senha'] == senha){
               Navigator.push(context, MaterialPageRoute(builder: (context) => PageProdutos(user: user)));
             }
@@ -92,6 +97,7 @@ class _LoginFormState extends State<LoginForm>{
                       labelStyle: TextStyle(
                         color: Color(0xFF000000)
                       ),
+
                       filled: true,
                       fillColor: Color(0xFFBDB133)
                   ),
@@ -146,12 +152,30 @@ class _LoginFormState extends State<LoginForm>{
                     ElevatedButton(
                       onPressed: (() => buttonClick()),
                       style: ButtonStyle(
-                        fixedSize: MaterialStateProperty.all(const Size(125, 35))
+                        fixedSize: MaterialStateProperty.all(const Size(125, 35)),
+                        backgroundColor: MaterialStateProperty.all(const MaterialColor(0xFFBDB133, mapPrimaryColor)),
+                        foregroundColor: MaterialStateProperty.all(Colors.black),
+                        textStyle: MaterialStateProperty.all(const TextStyle()),
                       ),
                       child: const Text("Login"),
                     ),
-                    const InkWell(
-                      child: Text(
+                    InkWell(
+                      onTap:  () async {
+                        Navigator.push(
+                            context, MaterialPageRoute(builder: (context) =>
+                            PageProdutos(user: Usuario(
+                              id: -1,
+                              email: "email",
+                              senha: "senha",
+                              produtos: <dynamic>[],
+                              imagem: FirebaseFirestore.instance.doc("gs:/vtr-effects.appspot.com/Usuarios/proffile.webp"),
+                              editando: false
+                              )
+                            )
+                          )
+                        );
+                      },
+                      child: const Text(
                         "Visitante",
                         style: TextStyle(
                             fontSize: 16.0,
