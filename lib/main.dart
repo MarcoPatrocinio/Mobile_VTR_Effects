@@ -24,6 +24,7 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor: const Color(0xFF04121F),
         primarySwatch: const MaterialColor(0x00000000, primaria),
         visualDensity: VisualDensity.adaptivePlatformDensity,
+        fontFamily: 'JosefinSans'
       ),
       home: const PageLogin(),
       routes: {

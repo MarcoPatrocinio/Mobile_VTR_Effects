@@ -103,7 +103,6 @@ flutter:
   # the material Icons class.
   uses-material-design: true
   assets:
-<<<<<<< Updated upstream
     - lib/assets/VTREffectsLogo.png
     - lib/assets/kailanireverb.png
     - lib/assets/narcisodelay.png
@@ -111,14 +110,7 @@ flutter:
     - lib/assets/overlay_comprado.png
     - assets/iconevtr.png
     - assets/splashvtr.png
-=======
-      - lib/assets/VTREffectsLogo.png
-      - lib/assets/kailanireverb.png
-      - lib/assets/narcisodelay.png
-      - lib/assets/Local.png
-      - lib/assets/overlay_comprado.png
-      - lib/assets/proffile.webp
->>>>>>> Stashed changes
+
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg
@@ -135,9 +127,23 @@ flutter:
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
   # example:
-  # fonts:
-  #   - family: Schyler
-  #     fonts:
+  fonts:
+    - family: Acme
+      fonts:
+        - asset: assets/fonts/Acme-Regular.ttf
+    - family: Courgette
+      fonts:
+       - asset: assets/fonts/Courgette-Regular.ttf
+
+    - family: JosefinSans
+      fonts:
+        - asset: assets/fonts/JosefinSans-Regular.ttf
+        - asset: assets/fonts/JosefinSans-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/JosefinSans-Light.ttf
+          weight: 300
+        - asset: assets/fonts/JosefinSans-Thin.ttf
+          weight: 100
   #       - asset: fonts/Schyler-Regular.ttf
   #       - asset: fonts/Schyler-Italic.ttf
   #         style: italic

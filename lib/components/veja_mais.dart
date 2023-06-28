@@ -326,14 +326,14 @@ class _VejaMaisState extends State<VejaMais>{
             ),
           ),
           const Padding(
-            padding: EdgeInsets.only(top: 5, bottom: 5),
+            padding: EdgeInsets.only(top: 10, bottom: 10),
             child: Text(
               "Avaliações do produto",
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 18,
                 color: Color(0xFFBDB133),
-                fontWeight: FontWeight.bold
+                fontWeight: FontWeight.w700
               ),
             ),
           ),
@@ -359,55 +359,72 @@ class _VejaMaisState extends State<VejaMais>{
               final imgUrl = storageRef.getDownloadURL();
               return Flex(
                 direction: Axis.vertical,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  ListTile(
-                    leading: GestureDetector(
-                      child: Container(
-                          height: 50.0,
-                          width: 50.0,
-                          decoration: const BoxDecoration(
-                              color: Color(0xB133FF),
-                              borderRadius: BorderRadius.all(Radius.circular(50))
+                  Padding(
+                    padding: EdgeInsets.all(5),
+                    child: ListTile(
+                      shape: RoundedRectangleBorder( //<-- SEE HERE
+                        side: BorderSide(width: 2),
+                        borderRadius: BorderRadius.circular(13),
+                      ),
+                      leading: GestureDetector(
+                        child: Container(
+                            height: 50.0,
+                            width: 50.0,
+                            decoration: const BoxDecoration(
+                                color: Color(0xB133FF),
+                                borderRadius: BorderRadius.all(Radius.circular(50))
+                            ),
+                            child: FutureBuilder(
+                              future: imgUrl,
+                              builder: (context, snapshot) {
+                                if(snapshot.hasData && snapshot.data != null){
+                                  return CircleAvatar(
+                                      radius: 50,
+                                      backgroundImage: NetworkImage(snapshot.data ?? '')
+                                  );
+                                }
+                                return const CircularProgressIndicator();
+                              },
+                            )
+                        ),
+                      ),
+                      title: Padding(
+                        padding: EdgeInsets.only(top: 10, bottom: 2),
+                        child:Text(
+                          comentario['email'],
+                          style: const TextStyle(
+                              color: Color(0xFFBDB133),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 13
                           ),
-                          child: FutureBuilder(
-                            future: imgUrl,
-                            builder: (context, snapshot) {
-                              if(snapshot.hasData && snapshot.data != null){
-                                return CircleAvatar(
-                                    radius: 50,
-                                    backgroundImage: NetworkImage(snapshot.data ?? '')
-                                );
-                              }
-                              return const CircularProgressIndicator();
-                            },
-                          )
+                          textAlign: TextAlign.start,
+                        ),
                       ),
-                    ),
-                    title: Text(
-                      comentario['email'],
-                      style: const TextStyle(
-                          color: Color(0xFFBDB133),
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18
+                      subtitle: Padding(
+                        padding: EdgeInsets.only(top: 2, bottom: 10),
+                        child: Text(
+                          comentario['com'],
+                          style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 15
+                          ),
+                        ),
                       ),
-                    ),
-                    subtitle: Text(
-                      comentario['com'],
-                      style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 15
-                      ),
+                      tileColor: Color(0x646C6C6C),
+                      contentPadding: EdgeInsets.all(5),
                     ),
                   ),
                   PreferredSize(
-                    preferredSize: const Size.fromHeight(7.0), // altura da borda
+                    preferredSize: const Size.fromHeight(10.0),
                     child: Container(
-                      decoration: const BoxDecoration(
+                      decoration: BoxDecoration(
                         border: Border(
                           bottom: BorderSide(width: 2.0, color: Color(0xFFBDB133)), // estilo e cor da borda
                         ),
                       ),
+                      width: 7,
                     ),
                   ),
                 ],
